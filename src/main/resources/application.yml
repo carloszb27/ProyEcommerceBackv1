@@ -1,0 +1,91 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /api/v1
+spring:
+  profiles:
+    active: dev
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  application:
+    name: ProyectoEcommerce
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/DBEcommerce
+    username: postgres
+    password: postgre
+  jpa:
+    database: postgresql
+    generate-ddl: true
+    #properties:
+      #hibernate:
+        #dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+  sql:
+    init:
+      platform: postgres
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type: TRACE
+---
+spring:
+  config:
+    activate:
+      on-profile: qa
+  application:
+    name: ProyectoEcommerce
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/DBEcommerce_qa
+    username: postgres
+    password: postgre
+  jpa:
+    database: postgresql
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  sql:
+    init:
+      platform: postgres
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  application:
+    name: ProyectoEcommerce
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/DBEcommerce_prod
+    username: postgres
+    password: postgre
+  jpa:
+    database: postgresql
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  sql:
+    init:
+      platform: postgres
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
