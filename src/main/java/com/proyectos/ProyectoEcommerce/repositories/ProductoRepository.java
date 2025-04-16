@@ -56,7 +56,12 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     @Query("select p from Producto p where p.categoria.id = ?1")
     List<Producto> findAllByCategoriaId(Long categoria);
 
-    @Query("select p from Producto p where p.proveedor.id =:proveedor")
+    /*
+    @Query("select p from Producto p where p.stock.id =:stock")
+    List<Producto> findAllByStockId(@Param("proveedor") Long stock);
+    */
+
+    @Query("select distinct p from Producto p join p.stock s where s.proveedor.id = :proveedor")
     List<Producto> findAllByProveedorId(@Param("proveedor") Long proveedor);
 
 }

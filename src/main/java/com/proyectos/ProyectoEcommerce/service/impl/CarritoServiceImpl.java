@@ -54,28 +54,19 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     public Carrito registrarCarrito(Carrito carrito) throws ClienteException, ProductoException {
 
-        // Una lista de detalleCarrito que sera utilizada para guardar los valores
-
-        List<CarritoItem> nuevosCarritoItems = new ArrayList<>();
-
         // Validar si el cliente existe
 
         Cliente cliente = clienteRepository.findById(carrito.getCliente().getId())
                 .orElseThrow(() -> new ClienteException(ClienteException.NotFoundException(carrito.getCliente().getId())));
 
-        carrito.setCliente(cliente);
-
-        // Primero guarda el Carrito para generar el Id
-
-        List<CarritoItem> carritoItems = carrito.getCarritoItems();
-
-        carrito.setCarritoItems(null);
-
-        Carrito carritoGuardado = carritoRepository.save(carrito);
-
         // Variable para asignar el precio total del Carrito
 
         double precioTotal = 0.0;
+
+        // Una lista de detalleCarrito que sera utilizada para guardar los valores
+
+        List<CarritoItem> carritoItems = carrito.getCarritoItems();
+
 
         for(CarritoItem carritoItem : carritoItems){
 
@@ -83,27 +74,15 @@ public class CarritoServiceImpl implements CarritoService {
             Producto producto = productoRepository.findById(carritoItem.getProducto().getId())
                     .orElseThrow(() -> new ProductoException(ProductoException.NotFoundException(carritoItem.getProducto().getId())));
 
-            carritoItem.setCarrito(carritoGuardado);
-
-            carritoItem.setProducto(producto);
-
-            carritoItem.setPrecio(Math.round(producto.getPrecio()*1.1));
+            carritoItem.setPrecio(Math.round(producto.getPrecio() ));
 
             precioTotal += carritoItem.getCantidad() * carritoItem.getPrecio();
 
-            nuevosCarritoItems.add(carritoItem);
-
-
-            producto.setCantidad(producto.getCantidad()- carritoItem.getCantidad());
-
-            productoRepository.save(producto);
         }
 
-        carritoGuardado.setCarritoItems(nuevosCarritoItems);
+        carrito.setPrecio(precioTotal);
 
-        carritoGuardado.setPrecio(precioTotal);
-
-        return carritoRepository.save(carritoGuardado);
+        return carritoRepository.save(carrito);
     }
 
     @Override

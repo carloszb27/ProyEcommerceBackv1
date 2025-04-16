@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "detallePago")
+@Table(name = "tbl_detallePago")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,4 +45,6 @@ public class DetallePago implements Serializable {
     @NotBlank(message = "El password es obligatorio")
     private String password;
 
+    @Column(name = "active")
+    private boolean active = true;
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "direccion_envio")
+@Table(name = "tbl_direccion_envio")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

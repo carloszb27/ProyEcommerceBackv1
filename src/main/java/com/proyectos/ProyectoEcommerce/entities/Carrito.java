@@ -15,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "carrito")
+@Table(name = "tbl_carrito")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,9 +37,9 @@ public class Carrito implements Serializable {
     @PositiveOrZero
     private double precio;
 
-    @JsonManagedReference
-    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    //@NotNull(message = "Los items son obligatorios")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "carrito", referencedColumnName = "id", nullable = false)
+    @NotNull(message = "Los items son obligatorios")
     private List<CarritoItem> carritoItems;
 
     @ManyToOne(fetch = FetchType.LAZY)

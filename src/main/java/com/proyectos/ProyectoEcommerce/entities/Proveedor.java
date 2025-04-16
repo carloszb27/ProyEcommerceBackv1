@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "proveedor", uniqueConstraints = @UniqueConstraint(
+@Table(name = "tbl_proveedor", uniqueConstraints = @UniqueConstraint(
         name = "emailproveedor_unique",
         columnNames = "correo"
 ))
@@ -47,7 +47,7 @@ public class Proveedor implements Serializable {
     @Column(name = "direccion", length = 100, nullable = false)
     private String direccion;
 
-    @Column(name = "active", nullable = false)
+    @Column(name = "active")
     private boolean active = true;
 
 }

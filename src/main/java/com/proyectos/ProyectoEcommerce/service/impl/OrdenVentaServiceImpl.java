@@ -1,8 +1,14 @@
 package com.proyectos.ProyectoEcommerce.service.impl;
 
+import com.proyectos.ProyectoEcommerce.entities.Carrito;
+import com.proyectos.ProyectoEcommerce.entities.CarritoItem;
 import com.proyectos.ProyectoEcommerce.entities.OrdenVenta;
+import com.proyectos.ProyectoEcommerce.entities.Producto;
+import com.proyectos.ProyectoEcommerce.error.exceptions.CarritoException;
 import com.proyectos.ProyectoEcommerce.error.exceptions.OrdenVentaException;
+import com.proyectos.ProyectoEcommerce.repositories.CarritoRepository;
 import com.proyectos.ProyectoEcommerce.repositories.OrdenVentaRepository;
+import com.proyectos.ProyectoEcommerce.repositories.ProductoRepository;
 import com.proyectos.ProyectoEcommerce.service.OrdenVentaService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +26,15 @@ public class OrdenVentaServiceImpl implements OrdenVentaService {
 
     private OrdenVentaRepository ordenVentaRepository;
 
+    private ProductoRepository productoRepository;
+
+    private CarritoRepository carritoRepository;
+
     @Autowired
-    public OrdenVentaServiceImpl(OrdenVentaRepository ordenVentaRepository) {
+    public OrdenVentaServiceImpl(OrdenVentaRepository ordenVentaRepository, ProductoRepository productoRepository, CarritoRepository carritoRepository) {
         this.ordenVentaRepository = ordenVentaRepository;
+        this.productoRepository = productoRepository;
+        this.carritoRepository = carritoRepository;
     }
 
     @Override
@@ -42,6 +54,23 @@ public class OrdenVentaServiceImpl implements OrdenVentaService {
 
     @Override
     public OrdenVenta registrarOrdenVenta(OrdenVenta ordenVenta) {
+
+        Carrito carrito = carritoRepository.findById(ordenVenta.getCarrito().getId())
+                .orElseThrow(()-> new CarritoException(CarritoException.NotFoundException(ordenVenta.getCarrito().getId())));
+
+        List<CarritoItem> items = carrito.getCarritoItems();
+
+        List<Producto> productos = new ArrayList<>();
+
+        items.forEach(item -> {
+
+            Producto producto = item.getProducto();
+            producto.setCantidad(producto.getCantidad() - item.getCantidad());
+            productos.add(producto);
+        });
+
+        productoRepository.saveAll(productos);
+
 
         ordenVenta.setEntregado(false);
 

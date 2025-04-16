@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "orden_venta")
+@Table(name = "tbl_orden_venta")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,7 +56,7 @@ public class OrdenVenta implements Serializable {
     //@NotNull(message = "La fecha de entrega es obligatorio")
     private Date fechaEntrega = new Date();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY/*, cascade = CascadeType.MERGE*/)
     @JoinColumn(name = "carrito")
     @NotNull(message = "El carrito es obligatorio")
     private Carrito carrito;

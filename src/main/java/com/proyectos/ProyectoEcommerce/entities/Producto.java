@@ -11,12 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "producto")
+@Table(name = "tbl_producto")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-//@ToString(exclude = "proveedor")
 public class Producto implements Serializable {
 
     @Id
@@ -26,7 +25,7 @@ public class Producto implements Serializable {
             allocationSize = 100
     )
     @GeneratedValue(generator = "producto_sequence", strategy = GenerationType.SEQUENCE)
-    @Column(name = "idProducto", length = 50)
+    @Column(name = "id", length = 50)
     private Long id;
 
     @Column(name = "nombre", length = 100, nullable = false)
@@ -37,8 +36,8 @@ public class Producto implements Serializable {
     @NotBlank(message = "La descripcion es obligatorio")
     private String descripcion;
 
-    @Column(name = "precio", length = 100, nullable = false)
-    @NotNull(message = "El precio es obligatorio")
+    @Column(name = "precio", length = 100/*, nullable = false*/)
+    //@NotNull(message = "El precio es obligatorio")
     @PositiveOrZero
     private double precio;
 
@@ -49,7 +48,7 @@ public class Producto implements Serializable {
 
     @Column(name = "urlImagen", length = 100)
     @NotBlank(message = "La url de la imagen es obligatorio")
-    @Size(min = 10, max = 100, message = "La url debe tener al menos 10 caracteres" +
+    @Size(min = 10, max = 300, message = "La url debe tener al menos 10 caracteres" +
             " y no debe exceder los 100 caracteres")
     private String urlImagen;
 
@@ -63,10 +62,13 @@ public class Producto implements Serializable {
     @NotNull(message = "La categoria es obligatorio")
     private Categoria categoria;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proveedor", nullable = false)
-    @NotNull(message = "El proveedor es obligatorio")
-    private Proveedor proveedor;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
+    @NotNull(message = "El stock es obligatorio")
+    private List<Stock> stock;
+
+    @Column(name = "descuento")
+    private boolean descuento = false;
 
     @Column(name = "active")
     private boolean active = true;

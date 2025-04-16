@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "metodo_pago")
+@Table(name = "tbl_metodo_pago")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,4 +28,7 @@ public class MetodoPago implements Serializable {
 
     @Column(name = "nombre", length = 100, nullable = false)
     private String nombre;
+
+    @Column(name = "active")
+    private boolean active = true;
 }

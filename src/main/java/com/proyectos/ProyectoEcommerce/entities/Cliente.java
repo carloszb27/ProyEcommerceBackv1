@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "cliente", uniqueConstraints = @UniqueConstraint(
+@Table(name = "tbl_cliente", uniqueConstraints = @UniqueConstraint(
         name = "email_unique",
         columnNames = "correo"
 ))
@@ -73,7 +73,6 @@ public class Cliente implements Serializable {
     @JsonManagedReference
     private List<OrdenVenta> ordenVenta;
 
-    @Column(name = "active", nullable = false)
+    @Column(name = "active")
     private boolean active = true;
-
 }

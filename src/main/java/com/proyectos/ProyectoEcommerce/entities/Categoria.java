@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "categoria", uniqueConstraints = @UniqueConstraint(
+@Table(name = "tbl_categoria", uniqueConstraints = @UniqueConstraint(
         name = "nombre_unique",
         columnNames = "nombre"
 ))
@@ -32,6 +32,6 @@ public class Categoria implements Serializable {
     @Column(name = "nombre", length = 100, nullable = false, unique = true)
     private String nombre;
 
-    @Column(name = "active", nullable = false)
+    @Column(name = "active")
     private boolean active = true;
 }
