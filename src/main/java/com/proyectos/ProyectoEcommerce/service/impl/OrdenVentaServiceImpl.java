@@ -65,7 +65,11 @@ public class OrdenVentaServiceImpl implements OrdenVentaService {
         items.forEach(item -> {
 
             Producto producto = item.getProducto();
-            producto.setCantidad(producto.getCantidad() - item.getCantidad());
+
+            producto.getLotes().forEach(lote -> {
+                lote.setStock( lote.getStock() - item.getCantidad() );
+            });
+
             productos.add(producto);
         });
 

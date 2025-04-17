@@ -16,7 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Stock implements Serializable {
+public class Lote implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -32,6 +32,11 @@ public class Stock implements Serializable {
     @NotNull(message = "El precio es obligatorio")
     @PositiveOrZero
     private double precio;
+
+    @Column(name = "stock", length = 100, nullable = false)
+    @NotNull(message = "La cantidad es obligatorio")
+    @PositiveOrZero
+    private int stock;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proveedor", nullable = false)

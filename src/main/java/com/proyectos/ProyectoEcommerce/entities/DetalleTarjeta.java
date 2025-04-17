@@ -17,7 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DetallePago implements Serializable {
+public class DetalleTarjeta implements Serializable {
 
     @Id
     @SequenceGenerator(

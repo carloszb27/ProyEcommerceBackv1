@@ -1,17 +1,13 @@
 package com.proyectos.ProyectoEcommerce.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -43,9 +39,9 @@ public class Carrito implements Serializable {
     private List<CarritoItem> carritoItems;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cliente")
-    @NotNull(message = "El cliente es obligatorio")
-    private Cliente cliente;
+    @JoinColumn(name = "idUser")
+    @NotNull(message = "El user es obligatorio")
+    private User user;
 
     @Column(name = "active")
     private boolean active = true;

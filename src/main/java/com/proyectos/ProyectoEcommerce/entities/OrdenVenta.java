@@ -1,12 +1,8 @@
 package com.proyectos.ProyectoEcommerce.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +11,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "tbl_orden_venta")
@@ -34,15 +29,10 @@ public class OrdenVenta implements Serializable {
     @Column(name = "id", length = 50)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "detalle_pago")
-    //@NotNull(message = "El detalle de pago es obligatorio")
-    private DetallePago detallePago;
-
     @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "cliente")
-    private Cliente cliente;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "detalleUsuario")
+    private DetalleUsuario detalleUsuario;
 
     @Column(name = "fechaCompra")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -60,11 +50,6 @@ public class OrdenVenta implements Serializable {
     @JoinColumn(name = "carrito")
     @NotNull(message = "El carrito es obligatorio")
     private Carrito carrito;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "direccion_envio")
-    @NotNull(message = "La direccion de envio es obligatorio")
-    private DireccionEnvio direccionEnvio;
 
     @ManyToOne
     @JoinColumn(name = "metodo_pago"/*, nullable = false*/)

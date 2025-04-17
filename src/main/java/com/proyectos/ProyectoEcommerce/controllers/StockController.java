@@ -1,6 +1,6 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
-import com.proyectos.ProyectoEcommerce.entities.Stock;
+import com.proyectos.ProyectoEcommerce.entities.Lote;
 import com.proyectos.ProyectoEcommerce.repositories.StockRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,7 @@ public class StockController {
 
     @GetMapping("")
     public ResponseEntity<?> listadoStocks(){
-        List<Stock> lista = stockRepository.findAll();
+        List<Lote> lista = stockRepository.findAll();
         return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 

@@ -95,8 +95,8 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public Producto registrarProducto(Producto producto) {
 
-        producto.getStock().forEach(stock -> {
-            producto.setPrecio(stock.getPrecio()*1.2);
+        producto.getLotes().forEach(stock -> {
+            producto.setPrecio(stock.getPrecio()*1.3);
         });
 
         return productoRepository.save(producto);

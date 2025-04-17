@@ -33,8 +33,10 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     //@Query("select p from Producto p where p.precio between :precio1 and :precio2 and c.active = true")
     List<Producto> findAllByPrecioBetweenAndActiveTrue(double precio1, double precio2);
 
+    @Query("select p from Producto p join p.lotes l where l.stock between :cantidad1 and :cantidad2 and p.active=true")
     List<Producto> findAllByCantidadBetweenAndActiveTrue(int cantidad1, int cantidad2);
 
+    @Query("select p from Producto p join p.lotes l where l.stock <= :cantidad and p.active=true")
     List<Producto> findAllByCantidadLessThanEqualAndActiveTrue(int cantidad);
 
 
@@ -57,11 +59,11 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findAllByCategoriaId(Long categoria);
 
     /*
-    @Query("select p from Producto p where p.stock.id =:stock")
-    List<Producto> findAllByStockId(@Param("proveedor") Long stock);
+    @Query("select p from Producto p where p.lotes.id =:lotes")
+    List<Producto> findAllByLotesId(@Param("proveedor") Long lotes);
     */
 
-    @Query("select distinct p from Producto p join p.stock s where s.proveedor.id = :proveedor")
+    @Query("select distinct p from Producto p join p.lotes l where l.proveedor.id = :proveedor")
     List<Producto> findAllByProveedorId(@Param("proveedor") Long proveedor);
 
 }

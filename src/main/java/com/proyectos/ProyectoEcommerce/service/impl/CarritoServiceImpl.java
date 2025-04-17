@@ -1,13 +1,10 @@
 package com.proyectos.ProyectoEcommerce.service.impl;
 
-import com.proyectos.ProyectoEcommerce.entities.Cliente;
-import com.proyectos.ProyectoEcommerce.entities.CarritoItem;
-import com.proyectos.ProyectoEcommerce.entities.Carrito;
-import com.proyectos.ProyectoEcommerce.entities.Producto;
-import com.proyectos.ProyectoEcommerce.error.exceptions.ClienteException;
+import com.proyectos.ProyectoEcommerce.entities.*;
+import com.proyectos.ProyectoEcommerce.error.exceptions.UserException;
 import com.proyectos.ProyectoEcommerce.error.exceptions.CarritoException;
 import com.proyectos.ProyectoEcommerce.error.exceptions.ProductoException;
-import com.proyectos.ProyectoEcommerce.repositories.ClienteRepository;
+import com.proyectos.ProyectoEcommerce.repositories.UserRepository;
 import com.proyectos.ProyectoEcommerce.repositories.CarritoItemRepository;
 import com.proyectos.ProyectoEcommerce.repositories.CarritoRepository;
 import com.proyectos.ProyectoEcommerce.repositories.ProductoRepository;
@@ -26,14 +23,14 @@ public class CarritoServiceImpl implements CarritoService {
     private final CarritoRepository carritoRepository;
     private final CarritoItemRepository carritoItemRepository;
     private final ProductoRepository productoRepository;
-    private final ClienteRepository clienteRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public CarritoServiceImpl(CarritoRepository carritoRepository, CarritoItemRepository carritoItemRepository, ProductoRepository productoRepository, ClienteRepository clienteRepository) {
+    public CarritoServiceImpl(CarritoRepository carritoRepository, CarritoItemRepository carritoItemRepository, ProductoRepository productoRepository, UserRepository userRepository) {
         this.carritoRepository = carritoRepository;
         this.carritoItemRepository = carritoItemRepository;
         this.productoRepository = productoRepository;
-        this.clienteRepository = clienteRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -52,12 +49,12 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     @Override
-    public Carrito registrarCarrito(Carrito carrito) throws ClienteException, ProductoException {
+    public Carrito registrarCarrito(Carrito carrito) throws UserException, ProductoException {
 
         // Validar si el cliente existe
 
-        Cliente cliente = clienteRepository.findById(carrito.getCliente().getId())
-                .orElseThrow(() -> new ClienteException(ClienteException.NotFoundException(carrito.getCliente().getId())));
+        User user = userRepository.findById(carrito.getUser().getId())
+                .orElseThrow(() -> new UserException(UserException.NotFoundException(carrito.getUser().getId())));
 
         // Variable para asignar el precio total del Carrito
 

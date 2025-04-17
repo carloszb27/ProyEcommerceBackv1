@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "tbl_producto")
@@ -41,10 +40,12 @@ public class Producto implements Serializable {
     @PositiveOrZero
     private double precio;
 
+    /*
     @Column(name = "cantidad", length = 100, nullable = false)
     @NotNull(message = "La cantidad es obligatorio")
     @PositiveOrZero
     private int cantidad;
+    */
 
     @Column(name = "urlImagen", length = 100)
     @NotBlank(message = "La url de la imagen es obligatorio")
@@ -64,8 +65,8 @@ public class Producto implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
-    @NotNull(message = "El stock es obligatorio")
-    private List<Stock> stock;
+    @NotNull(message = "Los lotes es obligatorio")
+    private List<Lote> lotes;
 
     @Column(name = "descuento")
     private boolean descuento = false;

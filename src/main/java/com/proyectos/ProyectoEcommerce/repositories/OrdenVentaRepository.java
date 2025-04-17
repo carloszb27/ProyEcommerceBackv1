@@ -15,8 +15,8 @@ public interface OrdenVentaRepository extends JpaRepository<OrdenVenta, Long> {
 
     List<OrdenVenta> findAllByActiveTrue();
 
-    @Query("select o from OrdenVenta o where o.carrito.cliente.id =:idCliente and o.active = true")
-    List<OrdenVenta> findAllByCliente(@Param("idCliente") Long idCliente);
+    @Query("select o from OrdenVenta o where o.carrito.user.id =:idUser and o.active = true")
+    List<OrdenVenta> findAllByUser(@Param("idUser") Long idUser);
 
     @Modifying
     @Transactional
