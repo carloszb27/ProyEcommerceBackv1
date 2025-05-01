@@ -1,14 +1,17 @@
 package com.proyectos.ProyectoEcommerce.service.impl;
 
+import com.proyectos.ProyectoEcommerce.dtos.Proveedor.ProveedorCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Proveedor.ProveedorDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Proveedor.ProveedorUpdateDTO;
 import com.proyectos.ProyectoEcommerce.entities.Proveedor;
 import com.proyectos.ProyectoEcommerce.error.exceptions.ProveedorException;
+import com.proyectos.ProyectoEcommerce.mapper.ProveedorMapper;
 import com.proyectos.ProyectoEcommerce.repositories.ProveedorRepository;
 import com.proyectos.ProyectoEcommerce.service.ProveedorService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,38 +26,39 @@ public class ProveedorServiceImpl implements ProveedorService {
     }
 
     @Override
-    public List<Proveedor> listarProveedores() {
+    public List<ProveedorDTO> listarProveedores() {
         List<Proveedor> lista = proveedorRepository.findAllByActiveTrue();
-
-        return lista.size()>0 ? lista : new ArrayList<Proveedor>();
+        return ProveedorMapper.instancia.listaProveedorAListaProveedorDTO(lista);
     }
 
     @Override
-    public Proveedor listarProveedorPorId(Long id) throws ProveedorException {
+    public ProveedorDTO listarProveedorPorId(Long id) throws ProveedorException {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new ProveedorException(ProveedorException.NotFoundException(id)));
-
-        return proveedor;
+        return ProveedorMapper.instancia.proveedorAProveedorDTO(proveedor);
     }
 
     @Override
-    public Proveedor registrarProveedor(Proveedor proveedor) {
-        return proveedorRepository.save(proveedor);
+    public ProveedorDTO registrarProveedor(ProveedorCreateDTO proveedorCreateDTO) {
+        Proveedor proveedor = ProveedorMapper.instancia.proveedorCreateDTOAProveedor(proveedorCreateDTO);
+        Proveedor nuevoProveedor = proveedorRepository.save(proveedor);
+        return ProveedorMapper.instancia.proveedorAProveedorDTO(nuevoProveedor);
     }
 
     @Override
-    public Proveedor actualizarProveedor(Proveedor proveedor) throws ProveedorException {
-        Proveedor proveedorExiste = proveedorRepository.findById(proveedor.getId())
-                .orElseThrow(() -> new ProveedorException(ProveedorException.NotFoundException(proveedor.getId())));
-
-        return proveedorRepository.save(proveedor);
+    public ProveedorDTO actualizarProveedor(ProveedorUpdateDTO proveedorUpdateDTO) throws ProveedorException {
+        Proveedor proveedorExiste = proveedorRepository.findById(proveedorUpdateDTO.id())
+                .orElseThrow(() -> new ProveedorException(
+                        ProveedorException.NotFoundException(proveedorUpdateDTO.id())));
+        Proveedor proveedor = ProveedorMapper.instancia.proveedorUpdateDTOAProveedor(proveedorUpdateDTO);
+        return ProveedorMapper.instancia.proveedorAProveedorDTO(proveedorRepository.save(proveedor));
     }
 
     @Override
     public String eliminarProveedor(Long id) throws ProveedorException {
         Proveedor proveedor = proveedorRepository.findById(id)
                 .orElseThrow(() -> new ProveedorException(ProveedorException.NotFoundException(id)));
-
+        proveedorRepository.updateProveedorSetActiveForId(false, id);
         return "El proveedor se ha eliminado correctamente";
     }
 }

@@ -1,70 +1,61 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
-import com.proyectos.ProyectoEcommerce.entities.User;
-import com.proyectos.ProyectoEcommerce.error.exceptions.UserException;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserDTO;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserUpdateDTO;
 import com.proyectos.ProyectoEcommerce.service.UserService;
+import com.proyectos.ProyectoEcommerce.util.CreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
+    private final CreateResponse createResponse;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, CreateResponse createResponse) {
         this.userService = userService;
+        this.createResponse = createResponse;
     }
 
     @GetMapping("")
     public ResponseEntity<?> listadoUsers(){
-
-        List<User> lista = userService.listarUsers();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<UserDTO> listaDTO = userService.listarUsers();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listarUserPorId(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(userService.listarUserPorId(id), HttpStatus.OK);
-        } catch (UserException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        UserDTO userDTO = userService.listarUserPorId(id);
+        return createResponse.crearResponse(userDTO);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> registrarUser(@Valid @RequestBody User user) {
-
-        return new ResponseEntity<>(userService.registrarUser(user), HttpStatus.CREATED);
+    public ResponseEntity<?> registrarUser(@Valid @RequestBody UserCreateDTO user) {
+        UserDTO userDTO = userService.registrarUser(user);
+        return createResponse.crearResponse(userDTO, true, userDTO.id());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarUser(@PathVariable Long id,
-                                               @Valid @RequestBody User user){
-
-        try {
-            return new ResponseEntity<>(userService.actualizarUser(id, user), HttpStatus.OK);
-        } catch (UserException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
+                                               @Valid @RequestBody UserUpdateDTO user){
+        UserDTO userDTO = userService.actualizarUser(id, user);
+        return createResponse.crearResponse(userDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarUser(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(userService.eliminarUser(id), HttpStatus.OK);
-        } catch (UserException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        String mensaje = userService.eliminarUser(id);
+        return createResponse.crearResponse(mensaje);
     }
-
 }

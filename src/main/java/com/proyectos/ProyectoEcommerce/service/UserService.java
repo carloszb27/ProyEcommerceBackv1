@@ -1,14 +1,16 @@
 package com.proyectos.ProyectoEcommerce.service;
 
-import com.proyectos.ProyectoEcommerce.entities.User;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserDTO;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserUpdateDTO;
 
 import java.util.List;
 
 public interface UserService {
 
-    public List<User> listarUsers();
-    public User listarUserPorId(Long id);
-    public User registrarUser(User user);
-    public User actualizarUser(Long id, User user);
+    public List<UserDTO> listarUsers();
+    public UserDTO listarUserPorId(Long id);
+    public UserDTO registrarUser(UserCreateDTO user);
+    public UserDTO actualizarUser(Long id, UserUpdateDTO user);
     public String eliminarUser(Long id);
 }

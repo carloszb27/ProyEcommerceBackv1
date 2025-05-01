@@ -1,21 +1,18 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
-import com.proyectos.ProyectoEcommerce.entities.Producto;
-import com.proyectos.ProyectoEcommerce.error.exceptions.ProductoException;
-import com.proyectos.ProyectoEcommerce.repositories.ProductoRepository;
+import com.proyectos.ProyectoEcommerce.dtos.Producto.ProductoCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Producto.ProductoDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Producto.ProductoUpdateDTO;
+import com.proyectos.ProyectoEcommerce.enums.Categoria;
 import com.proyectos.ProyectoEcommerce.service.ProductoService;
+import com.proyectos.ProyectoEcommerce.util.CreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -23,129 +20,127 @@ import java.util.List;
 public class ProductoController {
 
     private final ProductoService productoService;
-
-    private final ProductoRepository productoRepository;
+    private final CreateResponse createResponse;
 
     @Autowired
-    public ProductoController(ProductoService productoService, ProductoRepository productoRepository) {
+    public ProductoController(ProductoService productoService, CreateResponse createResponse) {
         this.productoService = productoService;
-        this.productoRepository = productoRepository;
+        this.createResponse = createResponse;
     }
 
     @GetMapping("")
     public ResponseEntity<?> listadoProductos(){
-        List<Producto> lista = productoService.listarProductos();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<ProductoDTO> lista = productoService.listarProductos();
+        return createResponse.crearResponse(lista);
     }
 
-    //@GetMapping("/paginado/{nropagina}")
     @GetMapping("/paginado")
-    public ResponseEntity<?> listadoProductos(@PageableDefault(page = 0, size = 10, sort = "nombre") Pageable pageable/*, @PathVariable Integer nropagina*/){
-
-        //Pageable pageable = PageRequest.of(
-                //nropagina-1, 10,
-                //Sort.by(Sort.Direction.ASC,"nombre"));
-
-        Page<Producto> lista = productoRepository.findAllByActiveTrue(pageable);
-
-        return new ResponseEntity<>(lista, !lista.getContent().isEmpty() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> listadoProductos(@PageableDefault(page = 0, size = 10, sort = "nombre") Pageable pageable){
+        Page<ProductoDTO> paginaProductosDTO = productoService.listarProductosPaginado(pageable);
+        return createResponse.crearResponse(paginaProductosDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listarProductoPorId(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(productoService.listarProductoPorId(id), HttpStatus.OK);
-        } catch (ProductoException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        ProductoDTO productoDTO = productoService.listarProductoPorId(id);
+        return createResponse.crearResponse(productoDTO);
     }
 
     @GetMapping("/empiezaPor/{nombre}")
     public ResponseEntity<?> listadoProductosQueEmpiecenPor(@PathVariable String nombre){
-        List<Producto> lista = productoRepository.findAllByNombreStartingWithIgnoreCaseAndActiveTrue(Sort.by("nombre", "precio"),nombre);
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<ProductoDTO> listaDTO =productoService.listarProductosQueEmpiecenPor(nombre);
+        return createResponse.crearResponse(listaDTO);
     }
 
-    /**/
+
     @GetMapping("/masComprados")
     public ResponseEntity<?> listadoProductosMasComprados(){
-        List<Producto> lista = productoService.listarProductosMasComprados();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<ProductoDTO> productoDTOS = productoService.listarProductosMasComprados();
+        return createResponse.crearResponse(productoDTOS);
     }
-    /**/
+
 
     @PostMapping("")
-    public ResponseEntity<?> registrarProducto(@Valid @RequestBody Producto producto){
-        return new ResponseEntity<>(productoService.registrarProducto(producto), HttpStatus.CREATED);
+    public ResponseEntity<?> registrarProducto(@Valid @RequestBody ProductoCreateDTO producto){
+        ProductoDTO productoDTO = productoService.registrarProducto(producto);
+        return createResponse.crearResponse(productoDTO, true, productoDTO.id());
     }
 
     @PutMapping("")
-    public ResponseEntity<?> actualizarProducto(@Valid @RequestBody Producto producto){
-
-        try {
-            return new ResponseEntity<>(productoService.actualizarProducto(producto), HttpStatus.OK);
-        } catch (ProductoException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> actualizarProducto(@Valid @RequestBody ProductoUpdateDTO producto){
+        ProductoDTO productoDTO = productoService.actualizarProducto(producto);
+        return createResponse.crearResponse(productoDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarProducto(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(productoService.eliminarProducto(id), HttpStatus.OK);
-        } catch (ProductoException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        String mensaje = productoService.eliminarProducto(id);
+        return createResponse.crearResponse(mensaje);
     }
 
     @GetMapping("/precio")
-    public ResponseEntity<List<Producto>> listarProductosPorPrecioEntre(@RequestParam double p1, @RequestParam double p2){
-
-        return new ResponseEntity<>(productoRepository.findAllByPrecioBetweenAndActiveTrue(p1, p2), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosPorPrecioEntre(@RequestParam double p1, @RequestParam double p2){
+        List<ProductoDTO> listaDTO = productoService.listarProductosPorPrecioEntre(p1, p2);
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/cantidad")
-    public ResponseEntity<List<Producto>> listarProductosPorCantidadEntre(@RequestParam int c1, @RequestParam int c2){
-
-        return new ResponseEntity<>(productoRepository.findAllByCantidadBetweenAndActiveTrue(c1, c2), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosPorCantidadEntre(@RequestParam int c1, @RequestParam int c2){
+        List<ProductoDTO> listaDTO = productoService.listarProductosPorCantidadEntre(c1, c2);
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/muyPocaCantidad")
-    public ResponseEntity<List<Producto>> listarProductosPorMuyPocaCantidad(){
-
-        return new ResponseEntity<>(productoRepository.findAllByCantidadLessThanEqualAndActiveTrue(5), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosPorMuyPocaCantidad(){
+        List<ProductoDTO> listaDTO = productoService.listarProductosPorMuyPocaCantidad();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/todaviaNoVencen")
-    public ResponseEntity<List<Producto>> listarProductosQueTodaviaNoVencen(){
-
-        return new ResponseEntity<>(productoRepository.findAllByFechaVenGreaterThanAndActiveTrue(new Date()), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosQueTodaviaNoVencen(){
+        List<ProductoDTO> listaDTO = productoService.listarProductosQueTodaviaNoVencen();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/vencenEnMenosUnMes")
-    public ResponseEntity<List<Producto>> listarProductosVencenMenosDeUnMes(){
-
-        return new ResponseEntity<>(productoRepository.findAllByFechaVenProximoAVencer(), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosVencenMenosDeUnMes(){
+        List<ProductoDTO> listaDTO = productoService.listarProductosVencenMenosDeUnMes();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/vencidos")
-    public ResponseEntity<List<Producto>> listarProductosVencidos(){
-
-        return new ResponseEntity<>(productoRepository.findAllByFechaVenLessThanEqualAndActiveTrue(new Date()), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosVencidos(){
+        List<ProductoDTO> listaDTO = productoService.listarProductosVencidos();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/categoria/{id}")
-    public ResponseEntity<List<Producto>> listarProductosPorCategoria(@PathVariable Long id){
-
-        return new ResponseEntity<>(productoRepository.findAllByCategoriaId(id), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosPorCategoria(@PathVariable Categoria categoria){
+       List<ProductoDTO> listaDTO = productoService.listarProductosPorCategoria(categoria);
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/proveedor/{id}")
-    public ResponseEntity<List<Producto>> listarProductosPorProveedor(@PathVariable Long id){
-
-        return new ResponseEntity<>(productoRepository.findAllByProveedorId(id), HttpStatus.OK);
+    public ResponseEntity<?> listarProductosPorProveedor(@PathVariable Long id){
+        List<ProductoDTO> listaDTO = productoService.listarProductosPorProveedor(id);
+        return createResponse.crearResponse(listaDTO);
     }
 
+    @GetMapping("/lote/{id}")
+    public ResponseEntity<?> listarProductoPorLote(@PathVariable Long id){
+        ProductoDTO productoDTO = productoService.listarProductoPorLote(id);
+        return createResponse.crearResponse(productoDTO);
+    }
+
+    @PutMapping("/aumentarPrecioProds/{porcentaje}")
+    public ResponseEntity<?> actualizarPrecioProductos(@PathVariable Double porcentaje){
+        String mensaje = productoService.actualizarPrecioProductos(porcentaje);
+        return createResponse.crearResponse(mensaje);
+    }
+
+    @PutMapping("/actualizarPreciosIniciales")
+    public ResponseEntity<?> actualizarPreciosOriginal(){
+        List<ProductoDTO> listaProductoDTO = productoService.actualizarProductosAPrecioOriginal();
+        return createResponse.crearResponse(listaProductoDTO);
+    }
 }

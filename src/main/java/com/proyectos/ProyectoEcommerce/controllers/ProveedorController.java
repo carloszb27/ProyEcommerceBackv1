@@ -1,11 +1,12 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
-import com.proyectos.ProyectoEcommerce.entities.Proveedor;
-import com.proyectos.ProyectoEcommerce.error.exceptions.ProveedorException;
+import com.proyectos.ProyectoEcommerce.dtos.Proveedor.ProveedorCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Proveedor.ProveedorDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Proveedor.ProveedorUpdateDTO;
 import com.proyectos.ProyectoEcommerce.service.ProveedorService;
+import com.proyectos.ProyectoEcommerce.util.CreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,52 +17,42 @@ import java.util.List;
 public class ProveedorController {
 
     private final ProveedorService proveedorService;
+    private final CreateResponse createResponse;
 
     @Autowired
-    public ProveedorController(ProveedorService proveedorService) {
+    public ProveedorController(ProveedorService proveedorService, CreateResponse createResponse) {
         this.proveedorService = proveedorService;
+        this.createResponse = createResponse;
     }
-
 
     @GetMapping("")
     public ResponseEntity<?> listadoProveedores(){
-        List<Proveedor> lista = proveedorService.listarProveedores();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<ProveedorDTO> listaDTO = proveedorService.listarProveedores();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listarProveedorPorId(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(proveedorService.listarProveedorPorId(id), HttpStatus.OK);
-        } catch (ProveedorException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        ProveedorDTO proveedorDTO = proveedorService.listarProveedorPorId(id);
+        return createResponse.crearResponse(proveedorDTO);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> registrarProveedor(@Valid @RequestBody Proveedor proveedor){
-        return new ResponseEntity<>(proveedorService.registrarProveedor(proveedor), HttpStatus.CREATED);
+    public ResponseEntity<?> registrarProveedor(@Valid @RequestBody ProveedorCreateDTO proveedor){
+        ProveedorDTO proveedorDTO = proveedorService.registrarProveedor(proveedor);
+        return createResponse.crearResponse(proveedorDTO, true, proveedorDTO.id());
     }
 
     @PutMapping("")
-    public ResponseEntity<?> actualizarProveedor(@Valid @RequestBody Proveedor proveedor){
-
-        try {
-            return new ResponseEntity<>(proveedorService.actualizarProveedor(proveedor), HttpStatus.OK);
-        } catch (ProveedorException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> actualizarProveedor(@Valid @RequestBody ProveedorUpdateDTO proveedor){
+        ProveedorDTO proveedorDTO = proveedorService.actualizarProveedor(proveedor);
+        return createResponse.crearResponse(proveedorDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarProveedor(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(proveedorService.eliminarProveedor(id), HttpStatus.OK);
-        } catch (ProveedorException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        String mensaje = proveedorService.eliminarProveedor(id);
+        return createResponse.crearResponse(mensaje);
     }
 
 }

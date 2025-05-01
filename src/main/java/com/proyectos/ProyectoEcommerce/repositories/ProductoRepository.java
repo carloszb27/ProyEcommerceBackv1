@@ -1,5 +1,7 @@
 package com.proyectos.ProyectoEcommerce.repositories;
 
+import com.proyectos.ProyectoEcommerce.enums.Categoria;
+import com.proyectos.ProyectoEcommerce.entities.Lote;
 import com.proyectos.ProyectoEcommerce.entities.Producto;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -13,14 +15,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     List<Producto> findAllByActiveTrue();
 
-    Page<Producto> findAllByActiveTrue(Pageable pageable);
+    @Query("select p from Producto p where p.active = true")
+    Page<Producto> findPagesAllByActiveTrue(Pageable pageable);
 
     //@Query("select p from Producto p where p.nombre like :nombre% and p.active = true")
     List<Producto> findAllByNombreStartingWithIgnoreCaseAndActiveTrue(Sort sort, String nombre);
@@ -33,12 +35,11 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     //@Query("select p from Producto p where p.precio between :precio1 and :precio2 and c.active = true")
     List<Producto> findAllByPrecioBetweenAndActiveTrue(double precio1, double precio2);
 
-    @Query("select p from Producto p join p.lotes l where l.stock between :cantidad1 and :cantidad2 and p.active=true")
+    @Query("select p from Producto p where p.lote.stock between :cantidad1 and :cantidad2 and p.active=true")
     List<Producto> findAllByCantidadBetweenAndActiveTrue(int cantidad1, int cantidad2);
 
-    @Query("select p from Producto p join p.lotes l where l.stock <= :cantidad and p.active=true")
+    @Query("select p from Producto p where p.lote.stock <= :cantidad and p.active=true")
     List<Producto> findAllByCantidadLessThanEqualAndActiveTrue(int cantidad);
-
 
     // Productos que no vencen aun
     List<Producto> findAllByFechaVenGreaterThanAndActiveTrue(Date fecha);
@@ -46,24 +47,23 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     //listarProductosVencidos
     List<Producto> findAllByFechaVenLessThanEqualAndActiveTrue(Date fecha);
 
-    //listarProductosPorVencerEnMenosdeUnMes
+    @Query("select p from Producto p where p.fechaVen between CURRENT_DATE() and :fechaLimite ")
+    List<Producto> findAllByFechaVenProximoAVencer(@Param("fechaLimite") Date fechaLimite);
 
-    //@Query("select p from Producto p where (p.fechaVen - :fecha)<1")
-    //@Query(value = " select * from producto where (fecha_ven - now()) < interval '1 month' and fecha_ven > now() ", nativeQuery = true)
-    @Query(value = " select * from producto where (fecha_ven - now()) between interval '0 day' and interval '1 month' and active=true ", nativeQuery = true)
-    List<Producto> findAllByFechaVenProximoAVencer();
+    @Query("select p from Producto p where categoria = ?1")
+    List<Producto> findAllByCategoria(Categoria categoria);
 
+    @Query("select p from Producto p where p.lote.id = :loteId")
+    Producto findProductoByLoteId(@Param("loteId") Long loteId);
 
+    @Query("select p.lote from Producto p where p.id = :productoId")
+    Lote findLoteByProductoId(@Param("productoId") Long productoId);
 
-    @Query("select p from Producto p where p.categoria.id = ?1")
-    List<Producto> findAllByCategoriaId(Long categoria);
-
-    /*
-    @Query("select p from Producto p where p.lotes.id =:lotes")
-    List<Producto> findAllByLotesId(@Param("proveedor") Long lotes);
-    */
-
-    @Query("select distinct p from Producto p join p.lotes l where l.proveedor.id = :proveedor")
+    @Query("select p from Producto p join p.lote l where l.proveedor.id = :proveedor")
     List<Producto> findAllByProveedorId(@Param("proveedor") Long proveedor);
 
+    @Modifying
+    @Transactional
+    @Query("update Producto p set p.precio = ROUND(p.precio * :factor, 4) where p.active = true")
+    void updateAllProductosPrecios(@Param("factor") double factor);
 }

@@ -1,11 +1,12 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
-import com.proyectos.ProyectoEcommerce.entities.DetalleUsuario;
-import com.proyectos.ProyectoEcommerce.error.exceptions.DetalleUsuarioException;
+import com.proyectos.ProyectoEcommerce.dtos.DetalleUsuario.DetalleUsuarioCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.DetalleUsuario.DetalleUsuarioDTO;
+import com.proyectos.ProyectoEcommerce.dtos.DetalleUsuario.DetalleUsuarioUpdateDTO;
 import com.proyectos.ProyectoEcommerce.service.DetalleUsuarioService;
+import com.proyectos.ProyectoEcommerce.util.CreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,45 +16,37 @@ import java.util.List;
 @RequestMapping("/detalleUsuario")
 public class DetalleUsuarioController {
     
-    private DetalleUsuarioService detalleUsuarioService;
+    private final DetalleUsuarioService detalleUsuarioService;
+    private final CreateResponse createResponse;
 
-    public DetalleUsuarioController(DetalleUsuarioService detalleUsuarioService) {
+    @Autowired
+    public DetalleUsuarioController(DetalleUsuarioService detalleUsuarioService, CreateResponse createResponse) {
         this.detalleUsuarioService = detalleUsuarioService;
+        this.createResponse = createResponse;
     }
 
     @GetMapping("")
     public ResponseEntity<?> listadoDetalleUsuarios(){
-
-        List<DetalleUsuario> lista = detalleUsuarioService.listarDetalleUsuarios();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<DetalleUsuarioDTO> listaDTO = detalleUsuarioService.listarDetalleUsuarios();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listarDetalleUsuarioPorId(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(detalleUsuarioService.listarDetalleUsuarioPorId(id), HttpStatus.OK);
-        } catch (DetalleUsuarioException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        DetalleUsuarioDTO detalleUsuarioDTO = detalleUsuarioService.listarDetalleUsuarioPorId(id);
+        return createResponse.crearResponse(detalleUsuarioDTO);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> registrarDetalleUsuario(@Valid @RequestBody DetalleUsuario detalleUsuario) {
-
-        return new ResponseEntity<>(detalleUsuarioService.registrarDetalleUsuario(detalleUsuario), HttpStatus.CREATED);
+    public ResponseEntity<?> registrarDetalleUsuario(@Valid @RequestBody DetalleUsuarioCreateDTO detalleUsuario) {
+        DetalleUsuarioDTO detalleUsuarioDTO = detalleUsuarioService.registrarDetalleUsuario(detalleUsuario);
+        return createResponse.crearResponse(detalleUsuarioDTO, true, detalleUsuarioDTO.id());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> actualizarDetalleUsuario(@PathVariable Long id,
-                                               @Valid @RequestBody DetalleUsuario detalleUsuario){
-
-        try {
-            return new ResponseEntity<>(detalleUsuarioService.actualizarDetalleUsuario(id, detalleUsuario), HttpStatus.OK);
-        } catch (DetalleUsuarioException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
+                                               @Valid @RequestBody DetalleUsuarioUpdateDTO detalleUsuario){
+        DetalleUsuarioDTO detalleUsuarioDTO = detalleUsuarioService.actualizarDetalleUsuario(id, detalleUsuario);
+        return createResponse.crearResponse(detalleUsuarioDTO);
     }
-    
 }

@@ -1,5 +1,6 @@
 package com.proyectos.ProyectoEcommerce.entities;
 
+import com.proyectos.ProyectoEcommerce.enums.Categoria;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -7,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "tbl_producto")
@@ -15,15 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Producto implements Serializable {
+public class Producto extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "producto_sequence",
-            sequenceName = "producto_sequence",
-            allocationSize = 100
-    )
-    @GeneratedValue(generator = "producto_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 
@@ -54,22 +49,31 @@ public class Producto implements Serializable {
     private String urlImagen;
 
     @Column(name = "fechaVen")
+    @Future
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Temporal(value = TemporalType.DATE)
     private Date fechaVen;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "categoria", nullable = false)
+    @Enumerated(EnumType.STRING)
     @NotNull(message = "La categoria es obligatorio")
     private Categoria categoria;
 
+    /*
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "producto", referencedColumnName = "id", nullable = false)
     @NotNull(message = "Los lotes es obligatorio")
     private List<Lote> lotes;
+*/
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "lote"/*, nullable = false*/)
+    @NotNull(message = "El lote es obligatorio")
+    private Lote lote;
+
 
     @Column(name = "descuento")
-    private boolean descuento = false;
+    @PositiveOrZero
+    private double descuento = 0.0;
 
     @Column(name = "active")
     private boolean active = true;

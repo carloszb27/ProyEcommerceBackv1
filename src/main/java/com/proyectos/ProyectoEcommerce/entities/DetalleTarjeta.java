@@ -17,14 +17,10 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DetalleTarjeta implements Serializable {
+public class DetalleTarjeta extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "detallepago_sequence",
-            sequenceName = "detallepago_sequence"
-    )
-    @GeneratedValue(generator = "detallepago_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 

@@ -16,12 +16,10 @@ public interface CarritoRepository extends JpaRepository<Carrito, Long> {
     List<Carrito> findAllByActiveTrue();
 
     @Query("select c from Carrito c where c.user.id =:idUser and c.active = true")
-    List<Carrito> findAllByUser(@Param("idUser") Long idUser);
+    List<Carrito> findAllByUserId(@Param("idUser") Long idUser);
 
     @Modifying
     @Transactional
     @Query("update Carrito c set c.active =:active where c.id =:id")
     void updateCarritoSetActiveForId(@Param("active") boolean active, @Param("id") Long id);
-
-
 }

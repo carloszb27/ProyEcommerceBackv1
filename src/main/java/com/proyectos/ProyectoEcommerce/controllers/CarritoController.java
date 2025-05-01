@@ -1,11 +1,12 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
-import com.proyectos.ProyectoEcommerce.entities.Carrito;
-import com.proyectos.ProyectoEcommerce.error.exceptions.CarritoException;
+import com.proyectos.ProyectoEcommerce.dtos.Carrito.CarritoCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Carrito.CarritoDTO;
+import com.proyectos.ProyectoEcommerce.dtos.Carrito.CarritoUpdateDTO;
 import com.proyectos.ProyectoEcommerce.service.CarritoService;
+import com.proyectos.ProyectoEcommerce.util.CreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,50 +17,41 @@ import java.util.List;
 public class CarritoController {
 
     private final CarritoService carritoService;
+    private final CreateResponse createResponse;
 
     @Autowired
-    public CarritoController(CarritoService carritoService) {
+    public CarritoController(CarritoService carritoService, CreateResponse createResponse) {
         this.carritoService = carritoService;
+        this.createResponse = createResponse;
     }
 
     @GetMapping("")
     public ResponseEntity<?> listadoCarritos(){
-        List<Carrito> lista = carritoService.listarCarritos();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<CarritoDTO> listaDTO = carritoService.listarCarritos();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listarCarritoPorId(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(carritoService.listarCarritoPorId(id), HttpStatus.OK);
-        } catch (CarritoException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        CarritoDTO carritoDTO = carritoService.listarCarritoPorId(id);
+        return createResponse.crearResponse(carritoDTO);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> registrarCarrito(@Valid @RequestBody Carrito carrito){
-        return new ResponseEntity<>(carritoService.registrarCarrito(carrito), HttpStatus.CREATED);
+    public ResponseEntity<?> registrarCarrito(@Valid @RequestBody CarritoCreateDTO carrito){
+        CarritoDTO carritoDTO = carritoService.registrarCarrito(carrito);
+        return createResponse.crearResponse(carritoDTO, true, carritoDTO.id());
     }
 
     @PutMapping("")
-    public ResponseEntity<?> actualizarCarrito(@Valid @RequestBody Carrito carrito){
-
-        try {
-            return new ResponseEntity<>(carritoService.actualizarCarrito(carrito), HttpStatus.OK);
-        } catch (CarritoException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> actualizarCarrito(@Valid @RequestBody CarritoUpdateDTO carrito){
+        CarritoDTO carritoDTO = carritoService.actualizarCarrito(carrito);
+        return createResponse.crearResponse(carritoDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarCarrito(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(carritoService.eliminarCarrito(id), HttpStatus.OK);
-        } catch (CarritoException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        String mensaje = carritoService.eliminarCarrito(id);
+        return createResponse.crearResponse(mensaje);
     }
 }

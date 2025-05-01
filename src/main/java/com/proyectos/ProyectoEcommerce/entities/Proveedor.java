@@ -14,37 +14,35 @@ import java.util.Date;
 
 @Entity
 @Table(name = "tbl_proveedor", uniqueConstraints = @UniqueConstraint(
-        name = "emailproveedor_unique",
-        columnNames = "correo"
+        name = "email_proveedor_unique",
+        columnNames = "email"
 ))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Proveedor implements Serializable {
+public class Proveedor extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "proveedor_sequence",
-            sequenceName = "proveedor_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(generator = "proveedor_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 
     @Column(name = "nombre", length = 100, nullable = false)
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
-    @Column(name = "correo", length = 100, nullable = false, unique = true)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     @NotBlank(message = "El email es obligatorio")
     @Email
-    private String correo;
+    private String email;
 
     @Column(name = "numTelefono", length = 50, nullable = false)
+    @NotBlank(message = "El numTelefono es obligatorio")
     private String numTelefono;
 
     @Column(name = "direccion", length = 100, nullable = false)
+    @NotBlank(message = "La direccion es obligatorio")
     private String direccion;
 
     @Column(name = "active")

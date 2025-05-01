@@ -15,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Rol implements Serializable {
+public class Rol extends AuditModel implements Serializable {
 
     @Id
     private Long id;

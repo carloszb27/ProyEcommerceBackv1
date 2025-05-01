@@ -24,14 +24,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User implements Serializable {
+public class User extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence"
-    )
-    @GeneratedValue(generator = "user_sequence",strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 
@@ -56,6 +52,7 @@ public class User implements Serializable {
     private String cellphone;
 
     @Column(name = "fechaNacimiento", nullable = false)
+    @Past
     @DateTimeFormat(pattern = "dd/MM/yyyy")
     @Temporal(value = TemporalType.DATE)
     @NotNull(message = "La fecha de nacimiento es obligatorio")
@@ -65,14 +62,14 @@ public class User implements Serializable {
     @NotBlank(message = "El username es obligatorio")
     private String username;
 
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password", length = 100/*, nullable = false*/)
     @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$"
             , message = "El password debe tener al menos 8 caracteres, al menos una letra en mayuscula, " +
             "una letra en minuscula, un numero y un caracter especial")
-    @NotBlank(message = "El password es obligatorio")
+    //@NotBlank(message = "El password es obligatorio")
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER,mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user"/*, orphanRemoval = true*/)
     @JsonIgnore
     private Set<UserRol> userRoles = new HashSet<>();
 

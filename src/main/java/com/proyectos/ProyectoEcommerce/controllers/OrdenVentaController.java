@@ -1,12 +1,13 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
 
-import com.proyectos.ProyectoEcommerce.entities.OrdenVenta;
-import com.proyectos.ProyectoEcommerce.error.exceptions.OrdenVentaException;
+import com.proyectos.ProyectoEcommerce.dtos.OrdenVenta.OrdenVentaCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.OrdenVenta.OrdenVentaDTO;
+import com.proyectos.ProyectoEcommerce.dtos.OrdenVenta.OrdenVentaUpdateDTO;
 import com.proyectos.ProyectoEcommerce.service.OrdenVentaService;
+import com.proyectos.ProyectoEcommerce.util.CreateResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,54 +17,42 @@ import java.util.List;
 @RequestMapping("/ordenVenta")
 public class OrdenVentaController {
 
-    private OrdenVentaService ordenVentaService;
+    private final OrdenVentaService ordenVentaService;
+    private final CreateResponse createResponse;
 
     @Autowired
-    public OrdenVentaController(OrdenVentaService ordenVentaService) {
+    public OrdenVentaController(OrdenVentaService ordenVentaService, CreateResponse createResponse) {
         this.ordenVentaService = ordenVentaService;
+        this.createResponse = createResponse;
     }
 
     @GetMapping("")
     public ResponseEntity<?> listadoOrdenVentas(){
-        List<OrdenVenta> lista = ordenVentaService.listarOrdenVentas();
-        return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        List<OrdenVentaDTO> listaDTO = ordenVentaService.listarOrdenVentas();
+        return createResponse.crearResponse(listaDTO);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> listarOrdenVentaPorId(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(ordenVentaService.listarOrdenVentaPorId(id), HttpStatus.OK);
-        } catch (OrdenVentaException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        OrdenVentaDTO ordenVentaDTO = ordenVentaService.listarOrdenVentaPorId(id);
+        return createResponse.crearResponse(ordenVentaDTO);
     }
 
     @PostMapping("")
-    public ResponseEntity<?> registrarOrdenVenta(@Valid @RequestBody OrdenVenta ordenVenta){
-        return new ResponseEntity<>(ordenVentaService.registrarOrdenVenta(ordenVenta), HttpStatus.CREATED);
+    public ResponseEntity<?> registrarOrdenVenta(@Valid @RequestBody OrdenVentaCreateDTO ordenVenta){
+        OrdenVentaDTO ordenVentaDTO = ordenVentaService.registrarOrdenVenta(ordenVenta);
+        return createResponse.crearResponse(ordenVentaDTO, true, ordenVentaDTO.id());
     }
 
     @PutMapping("")
-    public ResponseEntity<?> actualizarOrdenVenta(@Valid @RequestBody OrdenVenta ordenVenta){
-
-        try {
-            return new ResponseEntity<>(ordenVentaService.actualizarOrdenVenta(ordenVenta), HttpStatus.OK);
-        } catch (OrdenVentaException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> actualizarOrdenVenta(@Valid @RequestBody OrdenVentaUpdateDTO ordenVenta){
+        OrdenVentaDTO ordenVentaDTO = ordenVentaService.actualizarOrdenVenta(ordenVenta);
+        return createResponse.crearResponse(ordenVentaDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> eliminarOrdenVenta(@PathVariable Long id){
-
-        try {
-            return new ResponseEntity<>(ordenVentaService.eliminarOrdenVenta(id), HttpStatus.OK);
-        } catch (OrdenVentaException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        String mensaje = ordenVentaService.eliminarOrdenVenta(id);
+        return createResponse.crearResponse(mensaje);
     }
-
-    // Endpoints para direccion_facturacion y direccion_envio
-
 }

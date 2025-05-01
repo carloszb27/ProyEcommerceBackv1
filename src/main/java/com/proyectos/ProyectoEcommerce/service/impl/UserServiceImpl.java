@@ -1,18 +1,23 @@
 package com.proyectos.ProyectoEcommerce.service.impl;
 
+import com.proyectos.ProyectoEcommerce.dtos.User.UserCreateDTO;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserDTO;
+import com.proyectos.ProyectoEcommerce.dtos.User.UserUpdateDTO;
 import com.proyectos.ProyectoEcommerce.entities.User;
 import com.proyectos.ProyectoEcommerce.error.exceptions.UserException;
+import com.proyectos.ProyectoEcommerce.mapper.UserMapper;
 import com.proyectos.ProyectoEcommerce.repositories.UserRepository;
 import com.proyectos.ProyectoEcommerce.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,45 +32,57 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public List<User> listarUsers() {
+    public List<UserDTO> listarUsers() {
         List<User> lista = userRepository.findAllByActiveTrue();
-
-        return lista.size()>0 ? lista : new ArrayList<User>();
+        return UserMapper.instancia.listaUserAListaUserDTO(lista);
     }
 
     @Override
-    public User listarUserPorId(Long id) throws UserException {
-        User usuario = userRepository.findById(id)
-                .orElseThrow(() -> new UserException(UserException.NotFoundException(id)));
+    public UserDTO listarUserPorId(Long id) throws UserException {
+        try {
+            User usuario = userRepository.findById(id)
+                    .orElseThrow(() -> new UserException(UserException.NotFoundException(id)));
+            return UserMapper.instancia.userAUserDTO(usuario);
 
-        return usuario;
+        } catch (UserException e) {
+            throw new UserException(e.getMessage());
+        }
     }
 
     @Override
-    public User registrarUser(User usuario) {
-
+    public UserDTO registrarUser(UserCreateDTO userCreateDTO) {
+        User usuario = UserMapper.instancia.userCreateDTOAUser(userCreateDTO);
         usuario.setPassword(new BCryptPasswordEncoder().encode(usuario.getPassword()) );
-        
-        return userRepository.save(usuario);
+        return UserMapper.instancia.userAUserDTO(userRepository.save(usuario));
     }
 
     @Override
-    public User actualizarUser(Long id, User usuario) throws UserException {
+    public UserDTO actualizarUser(Long id, UserUpdateDTO userUpdateDTO) throws UserException {
+        try {
+            User usuarioExiste = userRepository.findById(id)
+                    .orElseThrow(() -> new UserException(UserException.NotFoundException(id)));
+            User usuario = UserMapper.instancia.userUpdateDTOAUser(userUpdateDTO);
+            if(usuario.getPassword() == null) {
+                usuario.setPassword(usuarioExiste.getPassword());
+            }
+            return UserMapper.instancia.userAUserDTO(userRepository.save(usuario));
+        } catch (UserException e) {
+            throw new UserException(e.getMessage());
+        }
 
-        User usuarioExiste = userRepository.findById(id)
-                .orElseThrow(() -> new UserException(UserException.NotFoundException(usuario.getId())));
-
-        return userRepository.save(usuario);
     }
 
     @Override
     public String eliminarUser(Long id) throws UserException {
-        User usuario = userRepository.findById(id)
-                .orElseThrow(() -> new UserException(UserException.NotFoundException(id)));
+        try {
+            User usuario = userRepository.findById(id)
+                    .orElseThrow(() -> new UserException(UserException.NotFoundException(id)));
+            userRepository.updateUserSetActiveForId(false, id);
+            return "El user se ha eliminado correctamente";
+        } catch (UserException e) {
+            throw new UserException(e.getMessage());
+        }
 
-        userRepository.updateUserSetActiveForId(false, id);
-
-        return "El user se ha eliminado correctamente";
     }
 
     @Override

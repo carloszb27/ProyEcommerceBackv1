@@ -11,20 +11,15 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "tbl_stock")
+@Table(name = "tbl_lote")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Lote implements Serializable {
+public class Lote extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "stock_sequence",
-            sequenceName = "stock_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(generator = "stock_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 
@@ -38,9 +33,9 @@ public class Lote implements Serializable {
     @PositiveOrZero
     private int stock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proveedor", nullable = false)
-    @NotNull(message = "El proveedor es obligatorio")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "proveedor"/*, nullable = false*/)
+    //@NotNull(message = "El proveedor es obligatorio")
     private Proveedor proveedor;
 
     @Column(name = "active")

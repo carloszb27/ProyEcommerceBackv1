@@ -16,15 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Carrito implements Serializable {
+public class Carrito extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "carrito_sequence",
-            sequenceName = "carrito_sequence",
-            allocationSize = 100
-    )
-    @GeneratedValue(generator = "carrito_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 
@@ -33,7 +28,7 @@ public class Carrito implements Serializable {
     @PositiveOrZero
     private double precio;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "carrito", referencedColumnName = "id", nullable = false)
     @NotNull(message = "Los items son obligatorios")
     private List<CarritoItem> carritoItems;

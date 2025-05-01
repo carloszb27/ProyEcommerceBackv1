@@ -23,14 +23,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DetalleUsuario implements Serializable {
+public class DetalleUsuario extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "cliente_sequence",
-            sequenceName = "cliente_sequence"
-    )
-    @GeneratedValue(generator = "cliente_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", length = 50)
     private Long id;
 /*
@@ -95,7 +91,7 @@ public class DetalleUsuario implements Serializable {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JsonBackReference
-    @JoinColumn(name = "usuario")
+    @JoinColumn(name = "usuario", nullable = false)
     private User user;
 
     @Column(name = "active")

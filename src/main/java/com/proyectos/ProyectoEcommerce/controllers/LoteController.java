@@ -1,7 +1,8 @@
 package com.proyectos.ProyectoEcommerce.controllers;
 
 import com.proyectos.ProyectoEcommerce.entities.Lote;
-import com.proyectos.ProyectoEcommerce.repositories.StockRepository;
+import com.proyectos.ProyectoEcommerce.repositories.LoteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,18 +12,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/stock")
-public class StockController {
+@RequestMapping("/lote")
+public class LoteController {
 
-    private final StockRepository stockRepository;
+    private final LoteRepository loteRepository;
 
-    public StockController(StockRepository stockRepository) {
-        this.stockRepository = stockRepository;
+    @Autowired
+    public LoteController(LoteRepository loteRepository) {
+        this.loteRepository = loteRepository;
     }
 
     @GetMapping("")
-    public ResponseEntity<?> listadoStocks(){
-        List<Lote> lista = stockRepository.findAll();
+    public ResponseEntity<?> listadoLotes(){
+        List<Lote> lista = loteRepository.findAll();
         return new ResponseEntity<>(lista, lista.size()>0 ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 

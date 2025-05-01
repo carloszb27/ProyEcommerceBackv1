@@ -32,9 +32,7 @@ public class SecurityConfig {
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/user/"/*,
-                        "/user/sugerir-username/{firstname}/{lastname}",
-                        "/user/sugerir-password"*/).permitAll()
+                .requestMatchers("/user/").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -63,15 +61,5 @@ public class SecurityConfig {
                 .build();
 
     }
-
-    /*METODO PARA ENCRYPTAR Y VER LA PASSWORD
-
-    public static void main(String[] args) {
-        System.out.println("Pasword: "+ new BCryptPasswordEncoder().encode("Afsldf.gfd_456"));
-    }*/
-    //$2a$10$pmNwpwWSgyiwXGsRMJVme.mGXNP3GqpMjgNWjgIrRoPwZSz1ywyzO
-
-
-
 
 }

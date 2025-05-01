@@ -15,15 +15,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 //@ToString(exclude = "carrito")
-public class CarritoItem implements Serializable {
+public class CarritoItem extends AuditModel implements Serializable {
 
     @Id
-    @SequenceGenerator(
-            name = "carritoitem_sequence",
-            sequenceName = "carritoitem_sequence",
-            allocationSize = 100
-    )
-    @GeneratedValue(generator = "carritoitem_sequence", strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 /*
