@@ -1,8 +1,9 @@
 package com.proyectos.ProyectoEcommerce.service;
 
-import com.proyectos.ProyectoEcommerce.dtos.User.UserDTO;
-import com.proyectos.ProyectoEcommerce.entities.User;
-import com.proyectos.ProyectoEcommerce.repositories.UserRepository;
+import com.proyectos.ProyectoEcommerce.persistence.entity.User;
+import com.proyectos.ProyectoEcommerce.presentation.dto.User.UserDTO;
+import com.proyectos.ProyectoEcommerce.persistence.repository.UserRepository;
+import com.proyectos.ProyectoEcommerce.service.interfaces.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ public class UserService2Test {
                 .email("juan.p@gmail.com")
                 .cellphone("+51987654321")
                 .fechaNacimiento(new Date())
-                .username("Juan P")
+                //.username("Juan P")
                 .password("Asff&gdfg753")
                 .active(true)
                 .build();

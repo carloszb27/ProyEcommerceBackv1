@@ -2,9 +2,22 @@ server:
   port: 8083
   servlet:
     context-path: /api/v1
+
+client:
+  url: ${CLIENT_URL}
+
+application:
+  security:
+    jwt:
+      secret-key: ${SECRET_KEY}
+      expiration: 900000 # 15 min
+
 spring:
   profiles:
     active: dev
+  output:
+    ansi:
+      enabled: ALWAYS
 ---
 spring:
   config:
@@ -20,9 +33,9 @@ spring:
   jpa:
     database: postgresql
     generate-ddl: true
-    #properties:
-      #hibernate:
-        #dialect: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
       naming:
