@@ -14,7 +14,7 @@ application:
 
 spring:
   profiles:
-    active: dev
+    active: prod
   output:
     ansi:
       enabled: ALWAYS
@@ -47,6 +47,12 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ANT_PATH_MATCHER
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
+      max-request-size: 2MB
 
 logging:
   level:
@@ -87,18 +93,36 @@ spring:
     name: ProyectoEcommerce
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/DBEcommerce_prod
+    url: jdbc:postgresql://postgres_database:5432/DBEcommerce
     username: postgres
     password: postgre
   jpa:
     database: postgresql
     generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
   sql:
     init:
       platform: postgres
-#  mvc:
-#    pathmatch:
-#      matching-strategy: ANT_PATH_MATCHER
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 2MB
+      max-request-size: 2MB
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type: TRACE

@@ -28,7 +28,7 @@ public interface ProductoService {
     public List<ProductoDTO> listarProductosQueTodaviaNoVencen();
     public List<ProductoDTO> listarProductosVencenMenosDeUnMes();
     public List<ProductoDTO> listarProductosVencidos();
-    public List<ProductoDTO> listarProductosPorCategoria(Categoria categoria);
+    public List<ProductoDTO> listarProductosPorCategoria(String categoria);
     public List<ProductoDTO> listarProductosPorProveedor(Long id);
     public ProductoDTO listarProductoPorLote(Long id);
     public String actualizarPrecioProductos(Double porcentaje);

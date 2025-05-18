@@ -16,5 +16,5 @@ public interface CarritoService {
     public CarritoDTO registrarCarrito(CarritoCreateDTO carrito);
     public CarritoDTO actualizarCarrito(CarritoUpdateDTO carrito);
     public String eliminarCarrito(Long id);
-    Optional<Carrito> listarCarritoPorUserActual();
+    CarritoDTO listarCarritoPorUserActual();
 }

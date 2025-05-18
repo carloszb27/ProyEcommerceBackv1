@@ -56,7 +56,8 @@ public class CarritoServiceImpl implements CarritoService {
         try {
             Carrito carrito = CarritoMapper.instancia.carritoCreateDTOACarrito(carritoCreateDTO);
 
-            Optional<Carrito> carritoExiste = listarCarritoPorUserActual();
+            User userActual = SessionUser.getUserAutenticado();
+            Optional<Carrito> carritoExiste = carritoRepository.findByUserId(userActual.getId());
 
             if(carritoExiste.isPresent()) {
                 carrito.setId(carritoExiste.get().getId());
@@ -65,7 +66,6 @@ public class CarritoServiceImpl implements CarritoService {
                 carrito.setEstado(EstadoCarrito.CREADO);
             }
 
-             User userActual = SessionUser.getUserAutenticado();
              carrito.setUser(userActual);
 
             // Variable para asignar el precio total del Carrito
@@ -120,9 +120,11 @@ public class CarritoServiceImpl implements CarritoService {
     }
 
     @Override
-    public Optional<Carrito> listarCarritoPorUserActual() {
+    public CarritoDTO listarCarritoPorUserActual() {
         User userActual = SessionUser.getUserAutenticado();
-        return carritoRepository.findByUserId(userActual.getId());
+        Carrito carrito = carritoRepository.findByUserId(userActual.getId())
+                .orElse(new Carrito());
+        return CarritoMapper.instancia.carritoACarritoDTO(carrito);
     }
 
 }

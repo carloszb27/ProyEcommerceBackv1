@@ -1,8 +1,6 @@
-package com.proyectos.ProyectoEcommerce.config.security;
+package com.proyectos.ProyectoEcommerce.util.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -43,8 +41,8 @@ public class JwtService {
 
     public boolean isTokenValid(String token) {
         try {
-             getAllClaims(token);
-             return true;
+            getAllClaims(token);
+            return true;
         } catch (Exception e) {
             log.error("Token invalido, error: ".concat(e.getMessage()));
             return false;
@@ -52,36 +50,49 @@ public class JwtService {
     }
 
     // Valida el token
-//    public boolean validateToken (String token, UserDetails userDetails){
-//        final String username = getUserName(token);
-//        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+//    public boolean validateToken(String token) {
+//        try {
+//            getAllClaims(token);
+//            return true;
+//        } catch (MalformedJwtException e) {
+//            log.error("Invalid JWT token: {}", e.getMessage());
+//        } catch (ExpiredJwtException e) {
+//            log.error("JWT token is expired: {}", e.getMessage());
+//        } catch (UnsupportedJwtException e) {
+//            log.error("JWT token is unsupported: {}", e.getMessage());
+//        } catch (IllegalArgumentException e) {
+//            log.error("JWT claims string is empty: {}", e.getMessage());
+//        }
+//
+//        return false;
 //    }
 
-    // Obtener el username del token
-    public String getUserName(String token){
-        return getClaim(token, Claims::getSubject);
-    }
 
-    // Obtener todos los claims del token
-    private Claims getAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignatureKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+// Obtener el username del token
+public String getUserName(String token) {
+    return getClaim(token, Claims::getSubject);
+}
 
-    // Obtener un solo claim
-    public <T> T getClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = getAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
+// Obtener todos los claims del token
+private Claims getAllClaims(String token) {
+    return Jwts.parserBuilder()
+            .setSigningKey(getSignatureKey())
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+}
 
-    //Obtener la firma del token
-    private Key getSignatureKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+// Obtener un solo claim
+public <T> T getClaim(String token, Function<Claims, T> claimsResolver) {
+    final Claims claims = getAllClaims(token);
+    return claimsResolver.apply(claims);
+}
+
+//Obtener la firma del token
+private Key getSignatureKey() {
+    byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+    return Keys.hmacShaKeyFor(keyBytes);
+}
 
 //    // El token esta expirado
 //    private boolean isTokenExpired(String token) {

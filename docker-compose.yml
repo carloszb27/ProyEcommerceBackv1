@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  spring-api-image:
+    image: proyectoecommercev1
+    container_name: proyectoecommercev1-container
+    ports:
+      - "8083:8083"
+    networks:
+      - spring-network
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres
+    container_name: postgres_database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgre
+      POSTGRES_DB: DBEcommerce
+
+    ports:
+      - "5433:5432" #Externo:Interno
+    networks:
+      - spring-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+
+networks:
+  spring-network:
+
+volumes:
+  postgres-data:

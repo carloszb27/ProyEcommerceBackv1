@@ -5,6 +5,5 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record CarritoCreateDTO(double precio,
-                               List<CarritoItemDTO> carritoItems) {
+public record CarritoCreateDTO(List<CarritoItemDTO> carritoItems) {
 }

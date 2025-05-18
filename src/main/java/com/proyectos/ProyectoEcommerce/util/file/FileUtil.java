@@ -1,13 +1,26 @@
 package com.proyectos.ProyectoEcommerce.util.file;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
-public class FileUtil {
+public class FileUtil implements Serializable {
 
-    public static void write(String text, String path) throws IOException {
+    private static FileUtil instance = null;
+
+    private FileUtil(){
+    }
+
+    public static FileUtil getInstance() {
+        if(instance == null) {
+            synchronized (FileUtil.class){
+                if(instance == null) {
+                    instance = new FileUtil();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public void write(String text, String path) throws IOException {
         File file = new File(path);
         if(!file.exists()) {
             boolean created = file.createNewFile();
@@ -23,6 +36,9 @@ public class FileUtil {
             bw.write(text);
             bw.newLine();
         }
+    }
 
+    protected Object readResolver(){
+        return instance;
     }
 }

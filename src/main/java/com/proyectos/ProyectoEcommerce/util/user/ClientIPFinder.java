@@ -7,7 +7,23 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class ClientIPFinder {
 
-    public static String getClientIp() {
+    private static ClientIPFinder instance = null;
+
+    private ClientIPFinder(){
+    }
+
+    public static ClientIPFinder getInstance(){
+        if(instance == null) {
+            synchronized (ClientIPFinder.class) {
+                if(instance == null) {
+                    instance = new ClientIPFinder();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public String getClientIp() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
 
         if (requestAttributes instanceof ServletRequestAttributes servletRequestAttributes) {

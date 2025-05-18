@@ -1,22 +1,27 @@
 package com.proyectos.ProyectoEcommerce.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.proyectos.ProyectoEcommerce.presentation.dto.User.UserCreateDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Date;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@WebMvcTest
 @AutoConfigureMockMvc
-class UserControllerTest {
+class UserControllerTest2 {
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,23 +54,33 @@ class UserControllerTest {
     @Test
     void registrarUser() throws Exception {
 
+        UserCreateDTO userCreateDTO = UserCreateDTO
+                .builder()
+                        .firstname("Luis")
+                                .lastname("Perez")
+                                        .email("luis.ppp@gmail.com")
+                                                .cellphone("+51987654321")
+                                                        .fechaNacimiento(new Date(2002,05,15))
+                                                                .password("Asd&sf_gl789")
+                                                                        .build();
+
         mockMvc.perform(MockMvcRequestBuilders.post("/user")
-                        .content("{\n" +
-                                "   \"firstname\":\"Luis\",\n" +
-                                "   \"lastname\":\"Perez\",\n" +
-                                "   \"email\":\"luis.ppp@gmail.com\",\n" +
-                                "   \"cellphone\":\"+51987654321\",\n" +
-                                "   \"fechaNacimiento\":\"2002-05-15\",\n" +
-                                "   \"username\":\"luis.perezzz\",\n" +
-                                "   \"password\":\"Asd&sf_gl789\"\n" +
-                                "}")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated())
-                .andExpect(MockMvcResultMatchers
-                        .content()
-                        .contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userCreateDTO)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content()
+                        .contentTypeCompatibleWith
+                                (MediaType.APPLICATION_JSON));
     }
 */
+    public static String asJsonString(Object obj){
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
+    }
+
     @Test
     void actualizarUser() {
     }

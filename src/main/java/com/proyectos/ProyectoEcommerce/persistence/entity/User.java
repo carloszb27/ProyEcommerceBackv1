@@ -19,7 +19,6 @@ import java.util.*;
 @EqualsAndHashCode(exclude = {"detalleUsuario"}, callSuper = false)
 @ToString(exclude = {"detalleUsuario"})
 //@Data
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

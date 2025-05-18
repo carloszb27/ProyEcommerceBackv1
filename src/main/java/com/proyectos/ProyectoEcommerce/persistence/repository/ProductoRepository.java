@@ -50,7 +50,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     @Query("select p from Producto p where p.fechaVen between CURRENT_DATE() and :fechaLimite ")
     List<Producto> findAllByFechaVenProximoAVencer(@Param("fechaLimite") Date fechaLimite);
 
-    @Query("select p from Producto p where categoria = ?1")
+    @Query("select p from Producto p where categoria = ?1 and p.active=true")
     List<Producto> findAllByCategoria(Categoria categoria);
 
     @Query("select p from Producto p where p.lote.id = :loteId")

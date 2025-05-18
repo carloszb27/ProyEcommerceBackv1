@@ -1,6 +1,6 @@
 package com.proyectos.ProyectoEcommerce.service.implementation;
 
-import com.proyectos.ProyectoEcommerce.config.security.JwtService;
+import com.proyectos.ProyectoEcommerce.util.security.JwtService;
 import com.proyectos.ProyectoEcommerce.persistence.entity.Auth;
 import com.proyectos.ProyectoEcommerce.persistence.entity.AuthResponse;
 import com.proyectos.ProyectoEcommerce.persistence.entity.Role;
@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
         String jwToken = jwtService.generateToken(new UserDetailImplement(user));
 
-//        LoginLogBuilder.crearLog(user);
+        //LoginLogBuilder.getInstance().imprimirLog(user);
 
         return new AuthResponse(jwToken);
     }

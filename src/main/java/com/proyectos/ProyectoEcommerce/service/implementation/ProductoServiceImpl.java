@@ -12,7 +12,6 @@ import com.proyectos.ProyectoEcommerce.persistence.repository.ProductoRepository
 import com.proyectos.ProyectoEcommerce.service.interfaces.ProductoService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -219,8 +218,8 @@ public class ProductoServiceImpl implements ProductoService {
     }
 
     @Override
-    public List<ProductoDTO> listarProductosPorCategoria(Categoria categoria) {
-        List<Producto> lista = productoRepository.findAllByCategoria(categoria);
+    public List<ProductoDTO> listarProductosPorCategoria(String categoria) {
+        List<Producto> lista = productoRepository.findAllByCategoria(Categoria.valueOf(categoria.toUpperCase()));
         return ProductoMapper.instancia.listaProductoAListaProductoDto(lista);
     }
 

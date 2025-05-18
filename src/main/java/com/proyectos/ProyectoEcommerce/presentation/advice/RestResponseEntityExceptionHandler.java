@@ -12,7 +12,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,13 +24,6 @@ import java.util.Map;
 @RestControllerAdvice
 //@ControllerAdvice
 public class RestResponseEntityExceptionHandler /*extends ResponseEntityExceptionHandler*/ {
-
-    private final CustomResponseBuilder customResponseBuilder;
-
-    @Autowired
-    public RestResponseEntityExceptionHandler(CustomResponseBuilder customResponseBuilder) {
-        this.customResponseBuilder = customResponseBuilder;
-    }
 
     //, IllegalArgumentException.class, ValidationException.class
     @ExceptionHandler({DataIntegrityViolationException.class})
@@ -44,7 +39,7 @@ public class RestResponseEntityExceptionHandler /*extends ResponseEntityExceptio
 
         //ApiResponse<String> apiResponse = new ApiResponse<>(new Date(), HttpStatus.BAD_REQUEST, e.getMessage(), webRequest.getDescription(false));
 
-        ResponseEntity<?> response = customResponseBuilder.crearResponse(e);
+        ResponseEntity<?> response = CustomResponseBuilder.getInstance().crearResponse(e);
 
         return response;
     }
@@ -62,6 +57,19 @@ public class RestResponseEntityExceptionHandler /*extends ResponseEntityExceptio
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
+
+
+//    @Override
+//    @ExceptionHandler(MaxUploadSizeExceededException.class)
+//    public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException ex) {
+//        return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("El archivo excede los 2MB permitidos");
+//    }
+//
+//    @Override
+//    @ExceptionHandler(FileNotFoundException.class)
+//    public ResponseEntity<?> handleFileNotFoundException(FileNotFoundException ex) {
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("El archivo solicitado no se ha encontrado o no esta disponible");
+//    }
 
 /*
     @Override
